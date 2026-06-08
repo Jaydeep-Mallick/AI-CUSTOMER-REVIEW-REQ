@@ -1,0 +1,85 @@
+{
+  "name": "AI Testimonial Generator Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-testimonial",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "e7b1c344-93af-4389-9a2c-94191373e21d",
+      "name": "Webhook (From React App)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        220,
+        300
+      ],
+      "webhookId": "generate-testimonial"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=PUT_YOUR_GEMINI_API_KEY_HERE",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": \"Write a personalized Google review request message for a customer of Manivtha Tours & Travels.\\n\\n--- DETAILS ---\\nCustomer: \" + ($json.body.customerName || \"Valued Customer\") + \"\\nTrip: \" + ($json.body.tripType || \"Tour\") + \"\\nDestination: \" + ($json.body.destination || \"their destination\") + \"\\nDate: \" + ($json.body.travelDate || \"recently\") + \"\\nDriver: \" + ($json.body.driverName || \"our driver\") + \"\\nNotes: \" + ($json.body.experienceNotes || \"None\") + \"\\nInstructions: \" + ($json.body.specialInstructions || \"None\") + \"\\nLink: \" + ($json.body.reviewLink || \"\") + \"\\n\\n--- RULES ---\\n1. Write a maximum of 120 words.\\n2. The tone must be \" + ($json.body.tone || \"Friendly\") + \".\\n3. Mention the trip details naturally.\\n4. Thank the customer and ask for a review politely.\\n5. Sign off as 'The Manivtha Tours & Travels Team'.\\n6. DO NOT include any placeholders or brackets.\\n\\nPlease provide ONLY the final message.\"\n    }]\n  }],\n  \"generationConfig\": {\n    \"temperature\": 0.7,\n    \"maxOutputTokens\": 250\n  }\n} }}",
+        "options": {}
+      },
+      "id": "31278ba9-094e-4f35-abfa-f97576a1a141",
+      "name": "Call Google Gemini AI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"message\": $json.candidates[0].content.parts[0].text } }}",
+        "options": {}
+      },
+      "id": "8482fba1-5184-4e94-a4f6-8c433c2a123f",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        680,
+        300
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook (From React App)": {
+      "main": [
+        [
+          {
+            "node": "Call Google Gemini AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Google Gemini AI": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f90c8855-46eb-46f0-b8ec-fbd29c3b01db"
+}

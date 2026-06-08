@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: hsl(220, 90%, 56%);
+  --color-secondary: hsl(210, 15%, 30%);
+  --color-accent: hsl(14, 85%, 60%);
+  --color-background: hsl(0, 0%, 100%);
+  --color-background-dark: hsl(210, 20%, 12%);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
