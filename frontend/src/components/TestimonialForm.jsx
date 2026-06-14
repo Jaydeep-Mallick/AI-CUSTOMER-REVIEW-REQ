@@ -8,7 +8,7 @@ const TestimonialForm = ({ onSubmit, isLoading }) => {
     travelDate: '',
     driverName: '',
     experienceNotes: '',
-    specialInstructions: '',
+
     reviewLink: '',
     tone: 'Friendly',
   });
@@ -117,18 +117,6 @@ const TestimonialForm = ({ onSubmit, isLoading }) => {
           rows="3"
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"
           placeholder="Any specific positive moments to mention?"
-        ></textarea>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Special Instructions (Optional)</label>
-        <textarea
-          name="specialInstructions"
-          value={formData.specialInstructions}
-          onChange={handleChange}
-          rows="2"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"
-          placeholder="e.g., Mention the new Innova Crysta"
         ></textarea>
       </div>
 
