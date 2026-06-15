@@ -74,7 +74,7 @@ const saveFeedback = async (data) => {
   const docData = {
     generationId,
     rating,
-    comment,
+    comment: comment || null,
     createdAt: new Date().toISOString()
   };
 

@@ -20,6 +20,14 @@ const OutputCard = ({ generatedMessage, onRegenerate, onFeedback }) => {
     toast.success('Downloaded as TXT');
   };
 
+  const [hoverStar, setHoverStar] = React.useState(0);
+  const [submittedRating, setSubmittedRating] = React.useState(0);
+
+  const handleStarClick = (rating) => {
+    setSubmittedRating(rating);
+    onFeedback(rating);
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col h-full">
       <div className="flex justify-between items-center mb-4">
@@ -54,11 +62,27 @@ const OutputCard = ({ generatedMessage, onRegenerate, onFeedback }) => {
       </div>
 
       <div className="mt-auto pt-4 border-t border-gray-100">
-        <p className="text-sm text-gray-600 mb-3 text-center">Rate this output to help improve the prompt:</p>
-        <div className="flex justify-center gap-4">
-           {/* Simple thumbs feedback for now, can expand to stars later based on requirements */}
-          <button onClick={() => onFeedback(1)} className="text-2xl hover:scale-110 transition-transform" title="Poor">👎</button>
-          <button onClick={() => onFeedback(5)} className="text-2xl hover:scale-110 transition-transform" title="Excellent">👍</button>
+        <p className="text-sm text-gray-600 mb-3 text-center">
+          {submittedRating ? 'Thank you for your feedback!' : 'Rate this output to help improve the prompt:'}
+        </p>
+        <div className="flex justify-center gap-2">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button 
+              key={star}
+              onClick={() => handleStarClick(star)}
+              onMouseEnter={() => setHoverStar(star)}
+              onMouseLeave={() => setHoverStar(0)}
+              className={`text-3xl transition-all focus:outline-none ${
+                star <= (hoverStar || submittedRating) 
+                  ? 'text-yellow-400 scale-110 drop-shadow-sm' 
+                  : 'text-gray-200 hover:text-yellow-200'
+              }`}
+              title={`Rate ${star} star${star > 1 ? 's' : ''}`}
+              disabled={!!submittedRating}
+            >
+              ★
+            </button>
+          ))}
         </div>
       </div>
     </div>

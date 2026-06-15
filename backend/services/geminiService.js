@@ -1,4 +1,4 @@
-const axios = require('axios');
+const { GoogleGenAI } = require('@google/genai');
 
 const generateMessage = async (formData) => {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -7,57 +7,47 @@ const generateMessage = async (formData) => {
     throw new Error('GEMINI_API_KEY is missing in environment variables');
   }
 
+  // Initialize the SDK
+  const ai = new GoogleGenAI({ apiKey });
+
   const customer = formData.customerName || 'Valued Customer';
   const trip = formData.tripType || 'Tour';
   const driver = formData.driverName || 'our driver';
-  const notes = formData.experienceNotes || 'the excellent service';
   const link = formData.reviewLink || 'https://g.page/r/xxxx/review';
+  const notes = formData.experienceNotes ? formData.experienceNotes.trim() : '';
 
-  const promptText = `You are a professional assistant. Output EXACTLY the following message, replacing the bracketed placeholders with the details provided. Do not add any extra text, greetings, or formatting.
+  let promptText = `You are a professional customer success manager for "Manivtha Tours & Travels". 
+Your task is to write a warm, personalized, and unique "Thank You" message to a customer after their trip.
+Do not use a rigid template. Be creative, natural, and friendly, but keep it professional and concise.
 
 DETAILS:
-- Customer: ${customer}
-- Trip: ${trip}
-- Driver: ${driver}
-- Notes: ${notes}
-- Link: ${link}
+- Customer Name: ${customer}
+- Trip Type/Destination: ${trip}
+- Driver's Name: ${driver}`;
 
-MESSAGE TO OUTPUT:
-Hi [Customer],
+  if (notes) {
+    promptText += `\n- Customer's Experience Notes: "${notes}"
+(CRITICAL: Make sure to explicitly mention and weave these notes naturally into the message to show we listened to their feedback.)`;
+  }
 
-Thank you for choosing Manivtha Tours & Travels for your [Trip].
+  promptText += `\n- Google Review Link: ${link}
 
-We're delighted to hear that you appreciated [Notes] during your journey with our driver, [Driver].
-
-Your feedback means a lot to us and helps us continue providing excellent service.
-
-We would greatly appreciate it if you could take a moment to leave us a Google review:
-
-[Link]
-
-Thank you for travelling with us, and we look forward to serving you again.
-
-Warm regards,
-Manivtha Tours & Travels`;
+REQUIREMENTS:
+1. Start with a warm greeting to the customer.
+2. Thank them for choosing Manivtha Tours & Travels for their trip.
+3. Mention their driver by name.
+4. Smoothly integrate their experience notes if provided. If no notes are provided, just express general gratitude for their journey.
+5. Politely ask them to leave a review using the provided Google Review Link.
+6. Sign off warmly as "Manivtha Tours & Travels".
+7. Do NOT include any placeholder text or brackets. Output the final ready-to-send message directly without extra markdown formatting.`;
 
   try {
-    const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        contents: [{
-          parts: [{
-            text: promptText
-          }]
-        }]
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: promptText,
+    });
 
-    let generatedText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    let generatedText = response.text;
     
     if (!generatedText) {
       throw new Error('Empty response from Google Gemini API');
@@ -65,7 +55,7 @@ Manivtha Tours & Travels`;
 
     return generatedText.trim();
   } catch (error) {
-    console.error('Gemini API Error:', error.response?.data || error.message);
+    console.error('Gemini API Error:', error);
     throw new Error('Failed to generate message directly from Gemini');
   }
 };
