@@ -9,7 +9,7 @@ const History = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/history');
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api'}/history`);
         const data = await response.json();
         if (data.success) {
           setGenerations(data.data);
@@ -34,7 +34,7 @@ const History = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this generation?')) {
       try {
-        const response = await fetch(`http://localhost:5001/api/history/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api'}/history/${id}`, {
           method: 'DELETE'
         });
         const data = await response.json();
