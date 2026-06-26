@@ -27,7 +27,8 @@ const Dashboard = () => {
       setIsLoading(false);
     } catch (error) {
       console.error(error);
-      toast.error('Failed to generate message. Please try again.');
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to generate message. Please try again.';
+      toast.error(errorMessage);
       setIsLoading(false);
     }
   };
@@ -66,6 +67,7 @@ const Dashboard = () => {
               generatedMessage={generatedMessage} 
               onRegenerate={handleRegenerate}
               onFeedback={handleFeedback}
+              isLoading={isLoading}
             />
           ) : (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col items-center justify-center h-full min-h-[400px] text-center text-gray-400">

@@ -12,17 +12,20 @@ const generateMessage = async (formData) => {
 
   const customer = formData.customerName || 'Valued Customer';
   const trip = formData.tripType || 'Tour';
+  const destination = formData.destination || '';
   const driver = formData.driverName || 'our driver';
   const link = formData.reviewLink || 'https://g.page/r/xxxx/review';
   const notes = formData.experienceNotes ? formData.experienceNotes.trim() : '';
+  const tone = formData.tone || 'Friendly';
 
   let promptText = `You are a professional customer success manager for "Manivtha Tours & Travels". 
-Your task is to write a warm, personalized, and unique "Thank You" message to a customer after their trip.
-Do not use a rigid template. Be creative, natural, and friendly, but keep it professional and concise.
+Your task is to write a ${tone.toLowerCase()}, personalized, and unique "Thank You" message to a customer after their trip.
+Do not use a rigid template. Be creative, natural, and ${tone.toLowerCase()}, but keep it professional and concise.
 
 DETAILS:
 - Customer Name: ${customer}
-- Trip Type/Destination: ${trip}
+- Trip Type: ${trip}
+- Destination: ${destination}
 - Driver's Name: ${driver}`;
 
   if (notes) {

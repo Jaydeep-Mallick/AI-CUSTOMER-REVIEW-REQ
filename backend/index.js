@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 5001;
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
+  origin: true,
   methods: ['GET', 'POST', 'DELETE'],
 }));
 app.use(express.json());
